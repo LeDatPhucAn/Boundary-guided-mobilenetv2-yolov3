@@ -1,0 +1,15 @@
+{
+  "id": "the0bserver/molov3coco",
+  "title": "Boundary-guided MobilenetV2 Yolov3 on COCO",
+  "code_file": "train.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": "true",
+  "enable_gpu": "true",
+  "enable_tpu": "false",
+  "enable_internet": "true",
+  "dataset_sources": [
+    "the0bserver/MSCOCO",
+    "the0bserver/PASCAL"
+  ]
+}
