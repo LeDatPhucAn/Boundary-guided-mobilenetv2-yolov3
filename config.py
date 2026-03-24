@@ -26,7 +26,7 @@ IMG_DIR = DATASET + "/images/"
 LABEL_DIR = DATASET + "/labels/"
 TRAIN_DIR = DATASET + "/train.csv"
 TEST_DIR = DATASET + "/test.csv"
-
+CONFIG_PATH = "MOLOv2v3coco.cfg"
 # ANCHORS = [
 #     [(0.28, 0.22), (0.38, 0.48), (0.9, 0.78)],
 #     [(0.07, 0.15), (0.15, 0.11), (0.14, 0.29)],

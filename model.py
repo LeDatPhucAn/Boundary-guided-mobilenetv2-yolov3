@@ -255,7 +255,7 @@ class MyMOLO(nn.Module):
 
             layer_outputs.append(x)
 
-        return yolo_outputs if self.training else torch.cat(yolo_outputs,1)
+        return yolo_outputs
     
 # class YOLOv3(nn.Module):
 #     def __init__(self, in_channels=3, num_classes=80):  
