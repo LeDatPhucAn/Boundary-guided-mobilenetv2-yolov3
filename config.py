@@ -7,8 +7,8 @@ from utils import seed_everything
 DATASET = '/kaggle/input/datasets/the0bserver/mscoco/COCO'
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 # seed_everything()  # If you want deterministic behavior
-NUM_WORKERS = 4
-BATCH_SIZE = 32
+NUM_WORKERS = 8
+BATCH_SIZE = 64
 IMAGE_SIZE = 320
 NUM_CLASSES = 80
 LEARNING_RATE = 0.001

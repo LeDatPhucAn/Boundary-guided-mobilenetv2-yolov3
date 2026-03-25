@@ -91,7 +91,7 @@ def main():
         #print("On Train loader:")
         #check_class_accuracy(model, train_loader, threshold=config.CONF_THRESHOLD)
 
-        if epoch > 0 and epoch % 50 == 0:
+        if epoch > 0 and epoch % 250 == 0:
             check_class_accuracy(model, test_loader, threshold=config.CONF_THRESHOLD)
             pred_boxes, true_boxes = get_evaluation_bboxes(
                 test_loader,
@@ -100,6 +100,7 @@ def main():
                 anchors=config.ANCHORS,
                 threshold=config.CONF_THRESHOLD,
             )
+            print("Boxes gotten from get_evaluation_bboxes function")
             mapval = mean_average_precision(
                 pred_boxes,
                 true_boxes,
