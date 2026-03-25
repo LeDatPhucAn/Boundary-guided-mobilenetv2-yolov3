@@ -77,3 +77,50 @@ class YoloLoss(nn.Module):
             + self.lambda_noobj * no_object_loss
             + self.lambda_class * class_loss
         )
+
+
+import torch.nn as nn
+
+class YoloLoss2(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.mse = nn.MSELoss()
+        self.bce = nn.BCEWithLogitsLoss()
+        self.entropy = nn.CrossEntropyLoss()
+        self.sigmoid = nn.Sigmoid()
+
+        self.lambda_class = 1
+        self.lambda_noobj = 10
+        self.lambda_obj = 1
+        self.lambda_box = 10
+
+    def forward(self, predictions, target, anchors):
+        """
+        predictions: Output from one of the YOLO layers (batch, anchors, grid, grid, classes+5)
+        target: Ground truth targets reshaped to match predictions
+        anchors: The specific anchor boxes for this scale
+        """
+        # 1. TODO: Create a mask identifying which grid cells/anchors contain an object (obj = 1) 
+        #          and which do not (noobj = 0).
+        obj = target[...,0] == 1
+        noobj = target[...,0] == 0
+
+        # 2. TODO: NO OBJECT LOSS
+        # Apply BCE loss between predicted objectness and target (0s) where noobj mask is True.
+        noobj_loss = self.bce(predictions[...,0:1][noobj], target[...,0:1][noobj])
+        # 3. TODO: OBJECT LOSS
+        # Apply BCE loss between predicted objectness and target (1s * IoU) where obj mask is True.
+        obj_loss = self.bce(predictions[...,0:1][obj], target[...,0:1][obj])
+        # 4. TODO: BOX COORDINATE LOSS
+        # Transform predicted x,y (sigmoid) and w,h (exp) to match target scales.
+        # Apply MSE loss between predicted and target coordinates where obj mask is True.
+        predictions[...,1:3] = self.sigmoid(predictions[...,1:3])
+        target[...,3:5] = torch.log(1e-16 + target[...,3:5]/ anchors)
+        box_loss = obj * self.mse(predictions[...,1:5], target[...,1:5])
+
+        # 5. TODO: CLASS LOSS
+        # Apply CrossEntropy (or BCE) between predicted classes and target classes where obj mask is True.
+        class_loss = self.bce(predictions[...,5:][obj],target[...,5:][obj].argmax(-1))
+        # 6. TODO: Return the sum of all four loss components.
+        return self.lambda_box * box_loss + self.lambda_obj * obj_loss + self.lambda_noobj * noobj_loss + self.lambda_class * class_loss
+        pass
