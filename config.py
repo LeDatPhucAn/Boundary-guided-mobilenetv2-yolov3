@@ -42,6 +42,7 @@ ANCHORS = [
     # Scale 2 (from mask = 0,1,2): Detects small objects on the fine grid
     [(12/320, 18/320), (37/320, 49/320), (52/320, 132/320)]     
 ]
+NUM_SCALE = 2
 scale = 1.1
 
 train_transforms = A.Compose(

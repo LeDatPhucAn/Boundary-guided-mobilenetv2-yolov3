@@ -20,9 +20,9 @@ class YoloLoss(nn.Module):
 
         # Constants signifying how much to pay for each respective part of the loss
         self.lambda_class = 1
-        self.lambda_noobj = 10
+        self.lambda_noobj = 0.5
         self.lambda_obj = 1
-        self.lambda_box = 10
+        self.lambda_box = 5
 
     def forward(self, predictions, target, anchors):
         # Check where obj and noobj (we ignore if target == -1)
@@ -79,7 +79,6 @@ class YoloLoss(nn.Module):
         )
 
 
-import torch.nn as nn
 
 class YoloLoss2(nn.Module):
     def __init__(self):
@@ -90,9 +89,9 @@ class YoloLoss2(nn.Module):
         self.sigmoid = nn.Sigmoid()
 
         self.lambda_class = 1
-        self.lambda_noobj = 10
+        self.lambda_noobj = 0.5
         self.lambda_obj = 1
-        self.lambda_box = 10
+        self.lambda_box = 5
 
     def forward(self, predictions, target, anchors):
         """

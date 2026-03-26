@@ -352,10 +352,10 @@ def cells_to_bboxes(predictions, anchors, S, is_preds=True):
                       object score, bounding box coordinates
     """
     BATCH_SIZE = predictions.shape[0]
-    num_anchors = len(anchors)
+    num_anchors = config.NUM_SCALE
     box_predictions = predictions[..., 1:5]
     if is_preds:
-        anchors = anchors.reshape(1, len(anchors), 1, 1, 2)
+        anchors = anchors.reshape(1, num_anchors, 1, 1, 2)
         box_predictions[..., 0:2] = torch.sigmoid(box_predictions[..., 0:2])
         box_predictions[..., 2:] = torch.exp(box_predictions[..., 2:]) * anchors
         scores = torch.sigmoid(predictions[..., 0:1])
