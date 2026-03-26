@@ -4,13 +4,13 @@ import torch
 from albumentations.pytorch import ToTensorV2
 from utils import seed_everything
 
-DATASET = '/kaggle/input/datasets/the0bserver/mscoco/COCO'
+DATASET = '/kaggle/input/datasets/the0bserver/pascal/pascal_voc'
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 # seed_everything()  # If you want deterministic behavior
-NUM_WORKERS = 8
-BATCH_SIZE = 64
+NUM_WORKERS = 4
+BATCH_SIZE = 32
 IMAGE_SIZE = 320
-NUM_CLASSES = 80
+NUM_CLASSES = 20
 LEARNING_RATE = 0.001
 WEIGHT_DECAY = 0.0005
 NUM_EPOCHS = 100
@@ -19,7 +19,7 @@ MAP_IOU_THRESH = 0.5
 NMS_IOU_THRESH = 0.45
 S = [IMAGE_SIZE // 32, IMAGE_SIZE // 16]
 PIN_MEMORY = True
-PREFETCH_FACTOR = 4
+PREFETCH_FACTOR = 2
 PERSISTENT_WORKERS = True
 LOAD_MODEL = False
 SAVE_MODEL = True
@@ -35,14 +35,26 @@ CONFIG_PATH = "MOLOv2v3coco.cfg"
 #     [(0.02, 0.03), (0.04, 0.07), (0.08, 0.06)],
 # ]  # Note these have been rescaled to be between [0, 1]
 
+
+# # COCO ANCHORS 
+# ANCHORS = [
+#     # Scale 1 (from mask = 3,4,5): Detects large objects on the coarse grid
+#     [(115/320, 74/320), (119/320, 199/320), (243/320, 238/320)], 
+    
+#     # Scale 2 (from mask = 0,1,2): Detects small objects on the fine grid
+#     [(12/320, 18/320), (37/320, 49/320), (52/320, 132/320)]     
+# ]
+
+# PASCAL VOC ANCHORS 
 ANCHORS = [
     # Scale 1 (from mask = 3,4,5): Detects large objects on the coarse grid
-    [(115/320, 74/320), (119/320, 199/320), (243/320, 238/320)], 
-    
+    [(189/320, 126/320), (137/320, 236/320), (265/320, 259/320)],     
+
     # Scale 2 (from mask = 0,1,2): Detects small objects on the fine grid
-    [(12/320, 18/320), (37/320, 49/320), (52/320, 132/320)]     
+    [(26/320, 48/320), (67/320, 84/320), (72/320, 175/320)]
 ]
-NUM_SCALE = 2
+
+NUM_SCALE = len(S)
 scale = 1.1
 
 train_transforms = A.Compose(

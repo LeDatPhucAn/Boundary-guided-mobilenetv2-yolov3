@@ -91,6 +91,7 @@ def main():
         #check_class_accuracy(model, train_loader, threshold=config.CONF_THRESHOLD)
 
         if epoch > 0 and epoch % 2 == 0:
+            print(f"Currently epoch {epoch}")
             check_class_accuracy(model, test_loader, threshold=config.CONF_THRESHOLD)
             pred_boxes, true_boxes = get_evaluation_bboxes(
                 test_loader,
