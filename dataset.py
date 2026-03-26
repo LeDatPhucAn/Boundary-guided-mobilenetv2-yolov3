@@ -107,7 +107,7 @@ def test():
     scaled_anchors = torch.tensor(anchors) / (
         1 / torch.tensor(S).unsqueeze(1).unsqueeze(1).repeat(1, 3, 2)
     )
-    loader = DataLoader(dataset=dataset, batch_size=1, shuffle=True)
+    loader = DataLoader(dataset=dataset, batch_size=1, shuffle=True,)
     for x, y in loader:
         boxes = []
 

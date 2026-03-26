@@ -472,6 +472,8 @@ def get_loaders(train_csv_path, test_csv_path):
         pin_memory=config.PIN_MEMORY,
         shuffle=True,
         drop_last=False,
+        prefetch_factor=config.PREFETCH_FACTOR,
+        persistent_workers=config.PERSISTENT_WORKERS,
     )
     test_loader = DataLoader(
         dataset=test_dataset,
@@ -480,6 +482,8 @@ def get_loaders(train_csv_path, test_csv_path):
         pin_memory=config.PIN_MEMORY,
         shuffle=False,
         drop_last=False,
+        prefetch_factor=config.PREFETCH_FACTOR,
+        persistent_workers=config.PERSISTENT_WORKERS,
     )
 
     train_eval_dataset = YOLODataset(
@@ -497,6 +501,8 @@ def get_loaders(train_csv_path, test_csv_path):
         pin_memory=config.PIN_MEMORY,
         shuffle=False,
         drop_last=False,
+        prefetch_factor=config.PREFETCH_FACTOR,
+        persistent_workers=config.PERSISTENT_WORKERS,
     )
 
     return train_loader, test_loader, train_eval_loader
