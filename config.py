@@ -54,7 +54,7 @@ ANCHORS = [
     [(26/320, 48/320), (67/320, 84/320), (72/320, 175/320)]
 ]
 
-NUM_SCALE = len(S)
+NUM_SCALE = 2
 scale = 1.1
 
 train_transforms = A.Compose(
