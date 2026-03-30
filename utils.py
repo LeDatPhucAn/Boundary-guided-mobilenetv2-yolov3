@@ -448,7 +448,6 @@ def load_checkpoint(checkpoint_file, model, optimizer, lr):
 
 def get_loaders(train_csv_path, test_csv_path):
     from dataset import YOLODataset
-    train_sampler = DistributedSampler(train_dataset)
     IMAGE_SIZE = config.IMAGE_SIZE
     train_dataset = YOLODataset(
         train_csv_path,
@@ -458,6 +457,7 @@ def get_loaders(train_csv_path, test_csv_path):
         label_dir=config.LABEL_DIR,
         anchors=config.ANCHORS,
     )
+    train_sampler = DistributedSampler(train_dataset)
     test_dataset = YOLODataset(
         test_csv_path,
         transform=config.test_transforms,
