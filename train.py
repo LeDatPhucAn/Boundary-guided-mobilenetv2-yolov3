@@ -103,34 +103,35 @@ def main():
         train_fn(train_loader, model, optimizer, loss_fn, scaler, scaled_anchors)
 
 
-        #print(f"Currently epoch {epoch}")
         #print("On Train Eval loader:")
         #print("On Train loader:")
         #check_class_accuracy(model, train_loader, threshold=config.CONF_THRESHOLD)
 
         if config.SAVE_MODEL and local_rank == 0:
            save_checkpoint(model.module, optimizer, filename=f"checkpoint.pth.tar")
-
-        # Restrict evaluation and printing to the primary GPU
-        if epoch == 100 and local_rank == 0:
+        
+        if epoch > 1 and epoch % 10 == 0 and local_rank == 0:
             print(f"Currently epoch {epoch}")
             check_class_accuracy(model, test_loader, threshold=config.CONF_THRESHOLD)
-            pred_boxes, true_boxes = get_evaluation_bboxes(
-                test_loader,
-                model,
-                iou_threshold=config.NMS_IOU_THRESH,
-                anchors=config.ANCHORS,
-                threshold=config.CONF_THRESHOLD,
-            )
-            print("Boxes gotten from get_evaluation_bboxes function")
-            mapval = mean_average_precision(
-                pred_boxes,
-                true_boxes,
-                iou_threshold=config.MAP_IOU_THRESH,
-                box_format="midpoint",
-                num_classes=config.NUM_CLASSES,
-            )
-            print(f"MAP: {mapval.item()}")
+            
+            if (epoch % 49 == 9) and local_rank == 0:
+                pred_boxes, true_boxes = get_evaluation_bboxes(
+                    test_loader,
+                    model,
+                    iou_threshold=config.NMS_IOU_THRESH,
+                    anchors=config.ANCHORS,
+                    threshold=config.CONF_THRESHOLD,
+                )
+                print("Boxes gotten from get_evaluation_bboxes function")
+                mapval = mean_average_precision(
+                    pred_boxes,
+                    true_boxes,
+                    iou_threshold=config.MAP_IOU_THRESH,
+                    box_format="midpoint",
+                    num_classes=config.NUM_CLASSES,
+                )
+                print(f"MAP: {mapval.item()}")
+
     dist.destroy_process_group()
 
 if __name__ == "__main__":
