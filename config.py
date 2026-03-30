@@ -53,7 +53,7 @@ ANCHORS = [
     # Scale 2 (from mask = 0,1,2): Detects small objects on the fine grid
     [(26/320, 48/320), (67/320, 84/320), (72/320, 175/320)]
 ]
-
+NUM_ANCHORS = len(ANCHORS[0])  # Number of anchors per scale
 NUM_SCALE = 2
 scale = 1.1
 

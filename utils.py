@@ -352,7 +352,7 @@ def cells_to_bboxes(predictions, anchors, S, is_preds=True):
                       object score, bounding box coordinates
     """
     BATCH_SIZE = predictions.shape[0]
-    num_anchors = config.NUM_SCALE
+    num_anchors = config.NUM_ANCHORS
     box_predictions = predictions[..., 1:5]
     if is_preds:
         anchors = anchors.reshape(1, num_anchors, 1, 1, 2)
