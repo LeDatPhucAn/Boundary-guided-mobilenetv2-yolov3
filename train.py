@@ -99,7 +99,6 @@ def main():
     ).to(config.DEVICE)
 
     for epoch in range(config.NUM_EPOCHS):
-        #plot_couple_examples(model, test_loader, 0.6, 0.5, scaled_anchors)
         train_fn(train_loader, model, optimizer, loss_fn, scaler, scaled_anchors)
 
 
@@ -110,27 +109,27 @@ def main():
         if config.SAVE_MODEL and local_rank == 0:
            save_checkpoint(model.module, optimizer, filename=f"checkpoint.pth.tar")
         
-        if epoch > 1 and epoch % 10 == 0 and local_rank == 0:
+        if epoch > 1 and epoch % 20 == 0 and local_rank == 0:
             print(f"Currently epoch {epoch}")
             check_class_accuracy(model, test_loader, threshold=config.CONF_THRESHOLD)
             
-            if (epoch % 49 == 9) and local_rank == 0:
-                pred_boxes, true_boxes = get_evaluation_bboxes(
-                    test_loader,
-                    model,
-                    iou_threshold=config.NMS_IOU_THRESH,
-                    anchors=config.ANCHORS,
-                    threshold=config.CONF_THRESHOLD,
-                )
-                print("Boxes gotten from get_evaluation_bboxes function")
-                mapval = mean_average_precision(
-                    pred_boxes,
-                    true_boxes,
-                    iou_threshold=config.MAP_IOU_THRESH,
-                    box_format="midpoint",
-                    num_classes=config.NUM_CLASSES,
-                )
-                print(f"MAP: {mapval.item()}")
+        if epoch == config.NUM_EPOCHS-1 and local_rank == 0:
+            pred_boxes, true_boxes = get_evaluation_bboxes(
+                test_loader,
+                model,
+                iou_threshold=config.NMS_IOU_THRESH,
+                anchors=config.ANCHORS,
+                threshold=config.CONF_THRESHOLD,
+            )
+            print("Boxes gotten from get_evaluation_bboxes function")
+            mapval = mean_average_precision(
+                pred_boxes,
+                true_boxes,
+                iou_threshold=config.MAP_IOU_THRESH,
+                box_format="midpoint",
+                num_classes=config.NUM_CLASSES,
+            )
+            print(f"MAP: {mapval.item()}")
 
     dist.destroy_process_group()
 

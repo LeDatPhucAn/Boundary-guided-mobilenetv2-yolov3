@@ -2,3 +2,8 @@
 *.jpg
 *.png
 *.jpeg
+PASCAL_VOC/
+COCO/
+runs/
+__pycache__/
+*.tar

@@ -5,6 +5,7 @@ import numpy as np
 import os
 import random
 import torch
+import torch.distributed as dist
 
 from collections import Counter
 from torch.utils.data import DataLoader
@@ -457,7 +458,13 @@ def get_loaders(train_csv_path, test_csv_path):
         label_dir=config.LABEL_DIR,
         anchors=config.ANCHORS,
     )
-    train_sampler = DistributedSampler(train_dataset)
+    if dist.is_available() and dist.is_initialized():
+        train_sampler = DistributedSampler(train_dataset)
+        shuffle = False
+    else:
+        train_sampler = None
+        shuffle = True
+
     test_dataset = YOLODataset(
         test_csv_path,
         transform=config.test_transforms,
@@ -472,7 +479,7 @@ def get_loaders(train_csv_path, test_csv_path):
         num_workers=config.NUM_WORKERS,
         pin_memory=config.PIN_MEMORY,
         sampler=train_sampler,
-        shuffle=False,
+        shuffle=shuffle,
         drop_last=False,
         prefetch_factor=config.PREFETCH_FACTOR,
         persistent_workers=config.PERSISTENT_WORKERS,
@@ -512,7 +519,7 @@ def get_loaders(train_csv_path, test_csv_path):
 def plot_couple_examples(model, loader, thresh, iou_thresh, anchors):
     model.eval()
     x, y = next(iter(loader))
-    x = x.to("cuda")
+    x = x.to(config.DEVICE)
     with torch.no_grad():
         out = model(x)
         bboxes = [[] for _ in range(x.shape[0])]

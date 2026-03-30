@@ -3,14 +3,16 @@ import cv2
 import torch
 from albumentations.pytorch import ToTensorV2
 from utils import seed_everything
-CHOSEN_DATASET = "PASCAL"
-DATASET = '/kaggle/input/datasets/the0bserver/pascal/PASCAL_VOC'
+CHOSEN_DATASET = "COCO" # or "PASCAL"
+# DATASET = '/kaggle/input/datasets/the0bserver/pascal/PASCAL_VOC'
+# DATASET = "PASCAL_VOC"
+DATASET = "/kaggle/input/datasets/the0bserver/mscoco/COCO" if CHOSEN_DATASET == "COCO" else "/kaggle/input/datasets/the0bserver/pascal/PASCAL_VOC"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 # seed_everything()  # If you want deterministic behavior
 NUM_WORKERS = 4
 BATCH_SIZE = 64
 IMAGE_SIZE = 320
-NUM_CLASSES = 20
+NUM_CLASSES = 80 if CHOSEN_DATASET == "COCO" else 20
 LEARNING_RATE = 0.001
 WEIGHT_DECAY = 0.0005
 NUM_EPOCHS = 100
@@ -28,31 +30,26 @@ IMG_DIR = DATASET + "/images/"
 LABEL_DIR = DATASET + "/labels/"
 TRAIN_DIR = DATASET + "/train.csv"
 TEST_DIR = DATASET + "/test.csv"
-CONFIG_PATH = "MOLOv2v3_pascal.cfg"
-# ANCHORS = [
-#     [(0.28, 0.22), (0.38, 0.48), (0.9, 0.78)],
-#     [(0.07, 0.15), (0.15, 0.11), (0.14, 0.29)],
-#     [(0.02, 0.03), (0.04, 0.07), (0.08, 0.06)],
-# ]  # Note these have been rescaled to be between [0, 1]
+CONFIG_PATH = "MOLOv2v3_coco.cfg" if CHOSEN_DATASET == "COCO" else "MOLOv2v3_pascal.cfg"
 
 
 # # COCO ANCHORS 
-# ANCHORS = [
-#     # Scale 1 (from mask = 3,4,5): Detects large objects on the coarse grid
-#     [(115/320, 74/320), (119/320, 199/320), (243/320, 238/320)], 
-    
-#     # Scale 2 (from mask = 0,1,2): Detects small objects on the fine grid
-#     [(12/320, 18/320), (37/320, 49/320), (52/320, 132/320)]     
-# ]
-
-# PASCAL VOC ANCHORS 
 ANCHORS = [
     # Scale 1 (from mask = 3,4,5): Detects large objects on the coarse grid
-    [(189/320, 126/320), (137/320, 236/320), (265/320, 259/320)],     
-
+    [(115/320, 74/320), (119/320, 199/320), (243/320, 238/320)], 
+    
     # Scale 2 (from mask = 0,1,2): Detects small objects on the fine grid
-    [(26/320, 48/320), (67/320, 84/320), (72/320, 175/320)]
+    [(12/320, 18/320), (37/320, 49/320), (52/320, 132/320)]     
 ]
+
+# PASCAL VOC ANCHORS 
+# ANCHORS = [
+#     # Scale 1 (from mask = 3,4,5): Detects large objects on the coarse grid
+#     [(189/320, 126/320), (137/320, 236/320), (265/320, 259/320)],     
+
+#     # Scale 2 (from mask = 0,1,2): Detects small objects on the fine grid
+#     [(26/320, 48/320), (67/320, 84/320), (72/320, 175/320)]
+# ]
 NUM_ANCHORS = len(ANCHORS[0])  # Number of anchors per scale
 NUM_SCALE = 2
 scale = 1.1
