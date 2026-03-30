@@ -62,13 +62,7 @@ def train_fn(train_loader, model, optimizer, loss_fn, scaler, scaled_anchors):
 
 
 def main():
-    model = MyMOLO(config_path=config.CONFIG_PATH)
 
-    if torch.cuda.device_count() > 1:
-        print(f"Let's use {torch.cuda.device_count()} GPUs!")
-        model = nn.DataParallel(model)
-
-    model.to(config.DEVICE)
     # 1. Initialize the distributed process group
     # nccl is the standard backend for NVIDIA GPUs
     dist.init_process_group(backend="nccl")
