@@ -4,6 +4,7 @@ Main file for training Yolo model on Pascal VOC and COCO dataset
 
 import config
 import torch
+import torch.nn as nn
 import torch.optim as optim
 
 from model import MyMOLO
@@ -57,7 +58,15 @@ def train_fn(train_loader, model, optimizer, loss_fn, scaler, scaled_anchors):
 
 
 def main():
-    model = MyMOLO(config_path=config.CONFIG_PATH).to(config.DEVICE)
+    model = MyMOLO(config_path=config.CONFIG_PATH)
+    
+    if torch.cuda.device_count() > 1:
+        print(f"Let's use {torch.cuda.device_count()} GPUs!")
+        model = nn.DataParallel(model)
+
+    model.to(config.DEVICE)
+
+
     optimizer = optim.Adam(
         model.parameters(), lr=config.LEARNING_RATE, weight_decay=config.WEIGHT_DECAY
     )
