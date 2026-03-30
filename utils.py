@@ -8,6 +8,7 @@ import torch
 
 from collections import Counter
 from torch.utils.data import DataLoader
+from torch.utils.data.distributed import DistributedSampler
 from tqdm import tqdm
 
 
@@ -447,7 +448,7 @@ def load_checkpoint(checkpoint_file, model, optimizer, lr):
 
 def get_loaders(train_csv_path, test_csv_path):
     from dataset import YOLODataset
-
+    train_sampler = DistributedSampler(train_dataset)
     IMAGE_SIZE = config.IMAGE_SIZE
     train_dataset = YOLODataset(
         train_csv_path,
@@ -470,7 +471,8 @@ def get_loaders(train_csv_path, test_csv_path):
         batch_size=config.BATCH_SIZE,
         num_workers=config.NUM_WORKERS,
         pin_memory=config.PIN_MEMORY,
-        shuffle=True,
+        sampler=train_sampler,
+        shuffle=False,
         drop_last=False,
         prefetch_factor=config.PREFETCH_FACTOR,
         persistent_workers=config.PERSISTENT_WORKERS,

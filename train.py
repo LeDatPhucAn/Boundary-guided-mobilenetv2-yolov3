@@ -2,10 +2,14 @@
 Main file for training Yolo model on Pascal VOC and COCO dataset
 """
 
+import os
+
 import config
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import torch.distributed as dist
+from torch.nn.parallel import DistributedDataParallel as DDP
 
 from model import MyMOLO
 from tqdm import tqdm
@@ -59,13 +63,26 @@ def train_fn(train_loader, model, optimizer, loss_fn, scaler, scaled_anchors):
 
 def main():
     model = MyMOLO(config_path=config.CONFIG_PATH)
-    
+
     if torch.cuda.device_count() > 1:
         print(f"Let's use {torch.cuda.device_count()} GPUs!")
         model = nn.DataParallel(model)
 
     model.to(config.DEVICE)
+    # 1. Initialize the distributed process group
+    # nccl is the standard backend for NVIDIA GPUs
+    dist.init_process_group(backend="nccl")
+    
+    # 2. Get the local rank assigned by torchrun
+    local_rank = int(os.environ["LOCAL_RANK"])
+    torch.cuda.set_device(local_rank)
+    device = torch.device(f"cuda:{local_rank}")
 
+    # 3. Initialize model and move it to the specific device first
+    model = MyMOLO(config_path=config.CONFIG_PATH).to(device)
+    
+    # 4. Wrap the model in DDP
+    model = DDP(model, device_ids=[local_rank])
 
     optimizer = optim.Adam(
         model.parameters(), lr=config.LEARNING_RATE, weight_decay=config.WEIGHT_DECAY
@@ -119,7 +136,7 @@ def main():
             )
             print(f"MAP: {mapval.item()}")
             model.train()
-
+    dist.destroy_process_group()
 
 if __name__ == "__main__":
     main()
