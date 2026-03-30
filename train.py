@@ -102,15 +102,17 @@ def main():
         #plot_couple_examples(model, test_loader, 0.6, 0.5, scaled_anchors)
         train_fn(train_loader, model, optimizer, loss_fn, scaler, scaled_anchors)
 
-        if config.SAVE_MODEL:
-           save_checkpoint(model, optimizer, filename=f"checkpoint.pth.tar")
 
         #print(f"Currently epoch {epoch}")
         #print("On Train Eval loader:")
         #print("On Train loader:")
         #check_class_accuracy(model, train_loader, threshold=config.CONF_THRESHOLD)
 
-        if epoch==100:
+        if config.SAVE_MODEL and local_rank == 0:
+           save_checkpoint(model.module, optimizer, filename=f"checkpoint.pth.tar")
+
+        # Restrict evaluation and printing to the primary GPU
+        if epoch == 100 and local_rank == 0:
             print(f"Currently epoch {epoch}")
             check_class_accuracy(model, test_loader, threshold=config.CONF_THRESHOLD)
             pred_boxes, true_boxes = get_evaluation_bboxes(
@@ -129,7 +131,6 @@ def main():
                 num_classes=config.NUM_CLASSES,
             )
             print(f"MAP: {mapval.item()}")
-            model.train()
     dist.destroy_process_group()
 
 if __name__ == "__main__":
