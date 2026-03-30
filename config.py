@@ -8,7 +8,7 @@ DATASET = '/kaggle/input/datasets/the0bserver/pascal/PASCAL_VOC'
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 # seed_everything()  # If you want deterministic behavior
 NUM_WORKERS = 4
-BATCH_SIZE = 128
+BATCH_SIZE = 256
 IMAGE_SIZE = 320
 NUM_CLASSES = 20
 LEARNING_RATE = 0.001
